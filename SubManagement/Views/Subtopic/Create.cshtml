@@ -1,0 +1,19 @@
+﻿@model SubManagement.Models.SubTopic
+
+<h2>Create Subtopic</h2>
+
+<form asp-action="Create" method="post">
+    <div class="mb-3">
+        <label class="form-label">Subtopic Name</label>
+        <input asp-for="SubtopicName" class="form-control" required />
+    </div>
+
+    <div class="mb-3">
+        <label class="form-label">Select Topic</label>
+        <select asp-for="TopicId" asp-items="ViewBag.Topics" class="form-control">
+            <option value="">-- Select a Topic --</option>
+        </select>
+    </div>
+
+    <button type="submit" class="btn btn-success">Create</button>
+</form>

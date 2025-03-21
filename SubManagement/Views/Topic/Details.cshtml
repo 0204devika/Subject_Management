@@ -1,0 +1,48 @@
+﻿@model SubManagement.Models.Topic
+
+@{
+    ViewData["Title"] = "Details";
+}
+
+<h1>Topic Details</h1>
+
+<div>
+    <h4>Topic</h4>
+    <hr />
+    <dl class="row">
+        <dt class="col-sm-2">
+            @Html.DisplayNameFor(model => model.Id)
+        </dt>
+        <dd class="col-sm-10">
+            @Html.DisplayFor(model => model.Id)
+        </dd>
+
+        <dt class="col-sm-2">
+            @Html.DisplayNameFor(model => model.TopicName)
+        </dt>
+        <dd class="col-sm-10">
+            @Html.DisplayFor(model => model.TopicName)
+        </dd>
+
+        <!-- If you have Subtopics to show -->
+        @if (Model.Subtopics != null && Model.Subtopics.Any())
+        {
+            <dt class="col-sm-2">
+                Subtopics
+            </dt>
+            <dd class="col-sm-10">
+                <ul>
+                    @foreach (var sub in Model.Subtopics)
+                    {
+                        <li>@sub.SubtopicName</li>
+                    }
+                </ul>
+            </dd>
+        }
+    </dl>
+</div>
+
+<div>
+    <a asp-action="Edit" asp-route-id="@Model.Id" class="btn btn-primary">Edit</a>
+    <a asp-action="Index" class="btn btn-secondary">Back to List</a>
+</div>

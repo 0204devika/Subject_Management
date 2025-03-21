@@ -1,0 +1,188 @@
+﻿@model List<SubManagement.Models.Topic>
+
+@{
+    ViewData["Title"] = "Create Topics and Subtopics";
+    var saved = ViewBag.SavedTopics as List<SubManagement.Models.Topic>;
+}
+
+<div class="container mt-4 mb-5">
+    <h2 class="text-center mb-4">@ViewData["Title"]</h2>
+
+    @if (TempData["Success"] != null)
+    {
+        <div class="alert alert-success alert-dismissible fade show" role="alert">
+            @TempData["Success"]
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+    }
+
+    <form asp-action="Index" method="post">
+        @Html.AntiForgeryToken()
+
+        <div id="topicsContainer">
+            @for (int i = 0; i < Model.Count; i++)
+            {
+                <div class="topic-block border p-3 mb-4 rounded shadow-sm bg-white">
+                    <h4>Topic @(@i + 1)</h4>
+
+                    <div class="form-group mb-2">
+                        <label>Topic Name</label>
+                        <input name="[@i].TopicName" class="form-control" required />
+                    </div>
+
+                    <table class="table table-bordered">
+                        <thead class="table-primary">
+                            <tr><th>Subtopic Name</th></tr>
+                        </thead>
+                        <tbody id="subtopics-@i">
+                            @for (int j = 0; j < Model[i].Subtopics.Count; j++)
+                            {
+                                <tr>
+                                    <td>
+                                        <input name="[@i].Subtopics[@j].SubtopicName" class="form-control" required />
+                                    </td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+
+                    <button type="button" class="btn btn-success btn-sm" onclick="addSubtopic(@i)">+ Add Subtopic</button>
+                </div>
+            }
+        </div>
+
+        <button type="button" class="btn btn-info" onclick="addTopic()">+ Add Topic</button>
+        <button type="submit" class="btn btn-primary float-end">Save</button>
+    </form>
+
+    <hr class="my-5" />
+
+    @* ✅ Display saved topics and subtopics *@
+@*     <h4>Saved Topics and Subtopics</h4>
+    @if (saved != null && saved.Any())
+    {
+        <div class="table-responsive">
+            <table class="table table-striped table-bordered">
+                <thead class="table-dark">
+                    <tr>
+                        <th>Topic</th>
+                        <th>Subtopics</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var topic in saved)
+                    {
+                        <tr>
+                            <td>@topic.TopicName</td>
+                            <td>
+                                <ul>
+                                    @foreach (var sub in topic.Subtopics)
+                                    {
+                                        <li>@sub.SubtopicName</li>
+                                    }
+                                </ul>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    }
+    else
+    {
+        <p class="text-muted">No topics saved yet.</p>
+    }
+</div> *@
+    <h4>Saved Topics and Subtopics</h4>
+    @if (saved != null && saved.Any())
+    {
+        <div class="table-responsive">
+            <table class="table table-striped table-bordered">
+                <thead class="table-dark">
+                    <tr>
+                        <th>Topic</th>
+                        <th>Subtopics</th>
+                        <th style="width: 180px;">Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var topic in saved)
+                    {
+                        <tr>
+                            <td>@topic.TopicName</td>
+                            <td>
+                                <ul class="mb-0">
+                                    @foreach (var sub in topic.Subtopics)
+                                    {
+                                        <li>@sub.SubtopicName</li>
+                                    }
+                                </ul>
+                            </td>
+                            <td>
+                                <a asp-controller="Topic" asp-action="Details" asp-route-id="@topic.Id" class="btn btn-sm btn-info">Details</a>
+                                <a asp-controller="Topic" asp-action="Edit" asp-route-id="@topic.Id" class="btn btn-sm btn-warning">Edit</a>
+                                <form asp-controller="Topic" asp-action="DeleteConfirmed" asp-route-id="@topic.Id" method="post" style="display:inline;">
+                                    @Html.AntiForgeryToken()
+                                    <button type="submit" class="btn btn-sm btn-danger" onclick="return confirm('Are you sure you want to delete this topic?');">Delete</button>
+                                </form>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    }
+    else
+    {
+        <p class="text-muted">No topics saved yet.</p>
+    }
+
+
+@section Scripts {
+    <script>
+        let topicIndex = @Model.Count;
+
+        function addTopic() {
+            const container = document.getElementById("topicsContainer");
+
+            const html = `
+                <div class="topic-block border p-3 mb-4 rounded shadow-sm bg-white">
+                    <h4>Topic ${topicIndex + 1}</h4>
+                    <div class="form-group mb-2">
+                        <label>Topic Name</label>
+                        <input name="[${topicIndex}].TopicName" class="form-control" required />
+                    </div>
+
+                    <table class="table table-bordered">
+                        <thead class="table-primary">
+                            <tr><th>Subtopic Name</th></tr>
+                        </thead>
+                        <tbody id="subtopics-${topicIndex}">
+                            <tr>
+                                <td><input name="[${topicIndex}].Subtopics[0].SubtopicName" class="form-control" required /></td>
+                            </tr>
+                        </tbody>
+                    </table>
+
+                    <button type="button" class="btn btn-success btn-sm" onclick="addSubtopic(${topicIndex})">+ Add Subtopic</button>
+                </div>
+            `;
+
+            container.insertAdjacentHTML("beforeend", html);
+            topicIndex++;
+        }
+
+        function addSubtopic(tIndex) {
+            const tbody = document.getElementById(`subtopics-${tIndex}`);
+            const rowCount = tbody.rows.length;
+
+            const html = `
+                <tr>
+                    <td><input name="[${tIndex}].Subtopics[${rowCount}].SubtopicName" class="form-control" required /></td>
+                </tr>
+            `;
+
+            tbody.insertAdjacentHTML("beforeend", html);
+        }
+    </script>
+}

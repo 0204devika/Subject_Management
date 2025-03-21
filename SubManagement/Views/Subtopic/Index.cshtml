@@ -1,0 +1,26 @@
+﻿@model IEnumerable<SubManagement.Models.SubTopic>
+
+<h2>Subtopics</h2>
+
+<!-- Add Create Button -->
+<a asp-controller="Subtopic" asp-action="Create" class="btn btn-primary mb-3">
+    Create New Subtopic
+</a>
+
+<table class="table">
+    <thead>
+        <tr>
+            <th>Subtopic Name</th>
+            <th>Topic</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var subTopic in Model)
+        {
+            <tr>
+                <td>@subTopic.SubtopicName</td>
+                <td>@subTopic.Topic.TopicName</td>
+            </tr>
+        }
+    </tbody>
+</table>
